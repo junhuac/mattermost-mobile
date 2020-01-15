@@ -4,6 +4,8 @@
 import {latinise} from './latinise.js';
 import {escapeRegex} from './markdown';
 
+import {getChannelByName} from 'mattermost-redux/selectors/entities/channels';
+import {getTeamByName} from 'mattermost-redux/selectors/entities/teams';
 import {Files} from 'mattermost-redux/constants';
 
 import {DeepLinkTypes} from 'app/constants';
@@ -120,6 +122,16 @@ export function matchDeepLink(url, serverURL, siteURL) {
     }
 
     return null;
+}
+
+export function channelIsReachable(state, channelName, teamName) {
+    const teamNameMatch = getTeamByName(state, teamName);
+    if (!teamNameMatch) {
+        return false;
+    }
+
+    const channelNameMatch = getChannelByName(state, channelName);
+    return Boolean(channelNameMatch);
 }
 
 export function getYouTubeVideoId(link) {

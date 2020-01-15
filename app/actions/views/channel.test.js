@@ -135,6 +135,9 @@ describe('Actions.Views.Channel', () => {
     channelSelectors.getCurrentChannelId = jest.fn(() => currentChannelId);
     channelSelectors.getMyChannelMember = jest.fn(() => ({data: {member: {}}}));
 
+    const urlUtils = require('app/utils/url');
+    urlUtils.channelIsReachable = jest.fn(() => true);
+
     test('handleSelectChannelByName success', async () => {
         store = mockStore(storeObj);
 
@@ -173,6 +176,18 @@ describe('Actions.Views.Channel', () => {
                 },
             };
         });
+
+        await store.dispatch(handleSelectChannelByName(currentChannelName, currentTeamName));
+
+        const storeActions = store.getActions();
+        const receivedChannel = storeActions.some((action) => action.type === MOCK_RECEIVE_CHANNEL_TYPE);
+        expect(receivedChannel).toBe(false);
+    });
+
+    test('handleSelectChannelByName failure from unreachable channel', async () => {
+        urlUtils.channelIsReachable = jest.fn(() => false);
+
+        store = mockStore(storeObj);
 
         await store.dispatch(handleSelectChannelByName(currentChannelName, currentTeamName));
 
