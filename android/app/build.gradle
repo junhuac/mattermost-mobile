@@ -75,7 +75,7 @@ import com.android.build.OutputFile
 project.ext.react = [
     entryFile: "index.js",
     bundleConfig: "metro.config.js",
-    enableHermes: true,
+    enableHermes: false,
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -116,7 +116,7 @@ def enableProguardInReleaseBuilds = false
  * give correct results when using with locales other than en-US.  Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc-intl:r241213'
+def engineFlavor = 'org.chromium:v8-android:+'
 
 /**
  * Whether to enable the Hermes VM.
@@ -133,6 +133,13 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        if (!enableHermes) {
+            // Make sure libjsc.so does not packed in APK
+            exclude "**/libjsc.so"
+        }
     }
 
     defaultConfig {
@@ -233,7 +240,7 @@ dependencies {
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
-        implementation jscFlavor
+        implementation engineFlavor
     }
 
     implementation fileTree(dir: "libs", include: ["*.jar"])

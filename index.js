@@ -54,6 +54,8 @@ if (Platform.OS === 'android') {
     AppRegistry.registerComponent('MattermostShare', () => ShareExtension);
     setFontFamily();
 
+    console.log(`V8 version is ${global._v8runtime().version}`); //eslint-disable-line
+
     if (LocalConfig.TelemetryEnabled) {
         const metricsSubscription = DeviceEventEmitter.addListener('nativeMetrics', (metrics) => {
             telemetry.setAppStartTime(metrics.appReload);
